@@ -329,4 +329,126 @@ MariaDB [fullstack]> SELECT s.Name, c.Code
 | Priya Das   | Web Programming     |
 | Amit Singh  | Web Programming     |
 +-------------+---------------------+
+
 25 rows in set (0.001 sec)
+MariaDB [fullstack]> SELECT c.Code AS Course_Code,
+    ->        c.Name AS Course_Name,
+    ->        COUNT(s.VTU) AS Total_Students
+    -> FROM Student s
+    -> JOIN Course c
+    -> ON s.VTU = c.Student_ID
+    -> GROUP BY c.Code, c.Name;
++---------------------+-------------+----------------+
+| Course_Code         | Course_Name | Total_Students |
++---------------------+-------------+----------------+
+| Data Structures     | IS202       |              1 |
+| Database Management | CS101       |              1 |
+| Digital Electronics | EC301       |              1 |
+| Operating Systems   | CS103       |              1 |
+| Web Programming     | IS204       |              1 |
++---------------------+-------------+----------------+
+5 rows in set (0.024 sec)
+
+MariaDB [fullstack]> CREATE TABLE Faculty_Courses AS
+    -> SELECT Faculty_Id,
+    ->        Code,
+    ->        Name AS Course_Name,
+    ->        Faculty_Email
+    -> FROM Course;
+Query OK, 5 rows affected (0.038 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> SELECT * FROM Faculty_Courses;
++------------+---------------------+-------------+--------------------+
+| Faculty_Id | Code                | Course_Name | Faculty_Email      |
++------------+---------------------+-------------+--------------------+
+| 102        | Data Structures     | IS202       | prof_jones@vtu.edu |
+| 101        | Database Management | CS101       | prof_smith@vtu.edu |
+| 103        | Digital Electronics | EC301       | prof_kumar@vtu.edu |
+| 101        | Operating Systems   | CS103       | prof_smith@vtu.edu |
+| 104        | Web Programming     | IS204       | prof_leila@vtu.edu |
++------------+---------------------+-------------+--------------------+
+5 rows in set (0.001 sec)
+
+MariaDB [fullstack]> UPDATE Student
+    -> SET Phone = CONCAT('+91', Phone)
+    -> WHERE Department = 'CSE'
+    -> ORDER BY VTU
+    -> LIMIT 5;
+Query OK, 2 rows affected, 2 warnings (0.023 sec)
+Rows matched: 2  Changed: 2  Warnings: 2
+
+MariaDB [fullstack]> SELECT VTU, Name, Phone FROM Student;
++------------+-------------+------------+
+| VTU        | Name        | Phone      |
++------------+-------------+------------+
+| 1MS23CS001 | Arjun Kumar | +919845011 |
+| 1MS23CS002 | Sneha Rao   | 9845022334 |
+| 1MS23CS003 | Rahul Nair  | +919845033 |
+| 1MS23CS004 | Priya Das   | 9845044556 |
+| 1MS23CS005 | Amit Singh  | 9845055667 |
++------------+-------------+------------+
+5 rows in set (0.001 sec)
+
+MariaDB [fullstack]> START TRANSACTION;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> INSERT INTO Student
+    -> VALUES ('1MS23CS006',
+    ->         'Kiran Rao',
+    ->         'kiran@mail.com',
+    ->         '9876543210',
+    ->         'CSE');
+Query OK, 1 row affected (0.020 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> COMMIT;
+Query OK, 0 rows affected (0.002 sec)
+
+MariaDB [fullstack]> SELECT * FROM Student;
++------------+-------------+----------------+------------+------------+
+| VTU        | Name        | Email          | Phone      | Department |
++------------+-------------+----------------+------------+------------+
+| 1MS23CS001 | Arjun Kumar | arjun@mail.com | +919845011 | CSE        |
+| 1MS23CS002 | Sneha Rao   | sneha@mail.com | 9845022334 | IT         |
+| 1MS23CS003 | Rahul Nair  | rahul@mail.com | +919845033 | CSE        |
+| 1MS23CS004 | Priya Das   | priya@mail.com | 9845044556 | ECE        |
+| 1MS23CS005 | Amit Singh  | amit@mail.com  | 9845055667 | IT         |
+| 1MS23CS006 | Kiran Rao   | kiran@mail.com | 9876543210 | CSE        |
++------------+-------------+----------------+------------+------------+
+6 rows in set (0.001 sec)
+
+MariaDB [fullstack]> START TRANSACTION;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> SAVEPOINT sp1;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELETE FROM Student
+    -> WHERE VTU = '1MS23CS006';
+Query OK, 1 row affected (0.020 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> -- Undo delete
+MariaDB [fullstack]> ROLLBACK TO sp1;
+Query OK, 0 rows affected (0.002 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> COMMIT;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [fullstack]> SELECT * FROM Student;
++------------+-------------+----------------+------------+------------+
+| VTU        | Name        | Email          | Phone      | Department |
++------------+-------------+----------------+------------+------------+
+| 1MS23CS001 | Arjun Kumar | arjun@mail.com | +919845011 | CSE        |
+| 1MS23CS002 | Sneha Rao   | sneha@mail.com | 9845022334 | IT         |
+| 1MS23CS003 | Rahul Nair  | rahul@mail.com | +919845033 | CSE        |
+| 1MS23CS004 | Priya Das   | priya@mail.com | 9845044556 | ECE        |
+| 1MS23CS005 | Amit Singh  | amit@mail.com  | 9845055667 | IT         |
+| 1MS23CS006 | Kiran Rao   | kiran@mail.com | 9876543210 | CSE        |
++------------+-------------+----------------+------------+------------+
+6 rows in set (0.001 sec)
