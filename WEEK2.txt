@@ -1,0 +1,520 @@
+Setting environment for using XAMPP for Windows.
+svdhi@DHIVYA e:\DZone\xampp
+# mysql -h localhost -u root
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.4.32-MariaDB mariadb.org binary distribution
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MariaDB [(none)]> use fullstack;
+Database changed
+MariaDB [fullstack]> CREATE TABLE Driver (
+    ->     id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     name VARCHAR(50),
+    ->     otp INT
+    -> );
+Query OK, 0 rows affected (0.016 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TABLE Orders (
+    ->     id INT AUTO_INCREMENT PRIMARY KEY,
+    ->     dish VARCHAR(50),
+    ->     price DECIMAL(8,2),
+    ->     total DECIMAL(10,2) DEFAULT 0
+    -> );
+Query OK, 0 rows affected (0.014 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TABLE Employee (
+    ->     id INT PRIMARY KEY,
+    ->     name VARCHAR(50),
+    ->     salary DECIMAL(10,2),
+    ->     created_at DATETIME
+    -> );
+Query OK, 0 rows affected (0.014 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TABLE Employee_Audit (
+    ->     id INT,
+    ->     old_name VARCHAR(50),
+    ->     old_salary DECIMAL(10,2),
+    ->     changed_at DATETIME
+    -> );
+Query OK, 0 rows affected (0.013 sec)
+MariaDB [fullstack]> INSERT INTO Driver (name, otp)
+    -> VALUES
+    -> ('Ramesh',1234),
+    -> ('Suresh',5678);
+Query OK, 2 rows affected (0.027 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> INSERT INTO Orders (dish, price, status)
+    -> VALUES
+    -> ('Pizza',250,'Pending'),
+    -> ('Burger',150,'Done'),
+    -> ('Pasta',200,'Pending');
+ERROR 1054 (42S22): Unknown column 'status' in 'field list'
+MariaDB [fullstack]>
+MariaDB [fullstack]> INSERT INTO Employee VALUES
+    -> (1,'Anil',35000,'2021-06-10',NULL),
+    -> (2,'Sunita',42000,'2019-03-15',NULL),
+    -> (3,'Kiran',28000,'2022-08-01',NULL);
+ERROR 1136 (21S01): Column count doesn't match value count at row 1
+MariaDB [fullstack]>
+MariaDB [fullstack]>
+MariaDB [fullstack]>
+MariaDB [fullstack]>
+MariaDB [fullstack]> -- Insert into Driver
+MariaDB [fullstack]> INSERT INTO Driver (name, otp) VALUES
+    -> ('Ramesh', 1234),
+    -> ('Suresh', 5678);
+Query OK, 2 rows affected (0.021 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> -- Insert into Orders
+MariaDB [fullstack]> INSERT INTO Orders (dish, price) VALUES
+    -> ('Pizza', 250),
+    -> ('Burger', 150),
+    -> ('Pasta', 200);
+Query OK, 3 rows affected (0.002 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> -- Insert into Employee
+MariaDB [fullstack]> INSERT INTO Employee (id, name, salary) VALUES
+    -> (1, 'Anil', 35000),
+    -> (2, 'Sunita', 42000),
+    -> (3, 'Kiran', 28000);
+Query OK, 3 rows affected (0.002 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> select * from Driver;
++----+--------+------+
+| id | name   | otp  |
++----+--------+------+
+|  1 | Ramesh | 1234 |
+|  2 | Ramesh | 1234 |
+|  3 | Suresh | 5678 |
+|  4 | Ramesh | 1234 |
+|  5 | Suresh | 5678 |
++----+--------+------+
+5 rows in set (0.001 sec)
+
+MariaDB [fullstack]> select * from Orders
+    -> ;
++----+--------+--------+-------+
+| id | dish   | price  | total |
++----+--------+--------+-------+
+|  1 | Pizza  | 250.00 |  0.00 |
+|  2 | Burger | 150.00 |  0.00 |
+|  3 | Pasta  | 200.00 |  0.00 |
++----+--------+--------+-------+
+3 rows in set (0.001 sec)
+
+MariaDB [fullstack]> select * from Employee;
++----+--------+----------+------------+
+| id | name   | salary   | created_at |
++----+--------+----------+------------+
+|  1 | Anil   | 35000.00 | NULL       |
+|  2 | Sunita | 42000.00 | NULL       |
+|  3 | Kiran  | 28000.00 | NULL       |
++----+--------+----------+------------+
+3 rows in set (0.001 sec)
+
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TRIGGER before_driver_insert
+    -> BEFORE INSERT ON Driver
+    -> FOR EACH ROW
+    -> BEGIN
+    ->    IF NEW.otp IS NULL THEN
+    ->       SIGNAL SQLSTATE '45000'
+    ->       SET MESSAGE_TEXT = 'OTP Required';
+    ->    END IF;
+    -> END//
+ERROR 1359 (HY000): Trigger 'fullstack.before_driver_insert' already exists
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TRIGGER after_order_insert
+    -> AFTER INSERT ON Orders
+    -> FOR EACH ROW
+    -> BEGIN
+    ->    UPDATE Orders
+    ->    SET total = total + NEW.price
+    ->    WHERE id = NEW.id;
+    -> END//
+Query OK, 0 rows affected (0.032 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TRIGGER check_salary
+    -> BEFORE INSERT ON Employee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->    IF NEW.salary < 0 THEN
+    ->       SIGNAL SQLSTATE '45000'
+    ->       SET MESSAGE_TEXT = 'Salary Cannot Be Negative';
+    ->    END IF;
+    -> END//
+Query OK, 0 rows affected (0.032 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE TRIGGER after_employee_update
+    -> AFTER UPDATE ON Employee
+    -> FOR EACH ROW
+    -> BEGIN
+    ->    INSERT INTO Employee_Audit
+    ->    VALUES (OLD.id, OLD.name, OLD.salary, NOW());
+    -> END//
+Query OK, 0 rows affected (0.030 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> INSERT INTO Driver (name) VALUES ('Manoj');
+ERROR 1644 (45000): OTP Required
+MariaDB [fullstack]> INSERT INTO Driver (name, otp) VALUES ('Manoj', 9999);
+Query OK, 1 row affected (0.002 sec)
+
+MariaDB [fullstack]> INSERT INTO Employee VALUES (4,'Ravi',-10000,NULL);
+ERROR 1644 (45000): Salary Cannot Be Negative
+MariaDB [fullstack]> INSERT INTO Employee VALUES (4,'Ravi',30000,NULL);
+Query OK, 1 row affected (0.020 sec)
+
+MariaDB [fullstack]> UPDATE Employee
+    -> SET salary = 50000
+    -> WHERE id = 1;
+Query OK, 1 row affected (0.024 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> SELECT * FROM Employee_Audit;
++------+----------+------------+---------------------+
+| id   | old_name | old_salary | changed_at          |
++------+----------+------------+---------------------+
+|    1 | Anil     |   35000.00 | 2026-02-04 12:22:13 |
++------+----------+------------+---------------------+
+1 row in set (0.001 sec)
+
+MariaDB [fullstack]> SELECT DATEDIFF('2026-02-01','2026-01-01') AS Days;
++------+
+| Days |
++------+
+|   31 |
++------+
+1 row in set (0.012 sec)
+
+MariaDB [fullstack]> SELECT DATE_ADD(CURDATE(), INTERVAL 30 DAY) AS Expiry_Date;
++-------------+
+| Expiry_Date |
++-------------+
+| 2026-03-06  |
++-------------+
+1 row in set (0.020 sec)
+
+MariaDB [fullstack]> SELECT DATE_SUB(CURDATE(), INTERVAL 7 DAY) AS Before_7_Days;
++---------------+
+| Before_7_Days |
++---------------+
+| 2026-01-28    |
++---------------+
+1 row in set (0.001 sec)
+
+MariaDB [fullstack]> SELECT *
+    -> FROM Employee
+    -> WHERE DAYOFWEEK(created_at) IN (1,7);
+Empty set (0.020 sec)
+
+MariaDB [fullstack]> SELECT MONTHNAME(
+    -> STR_TO_DATE('15-02-2026','%d-%m-%Y')
+    -> ) AS Month_Name;
++------------+
+| Month_Name |
++------------+
+| February   |
++------------+
+1 row in set (0.018 sec)
+
+MariaDB [fullstack]> CREATE INDEX idx_email
+    -> ON Student(Email);
+Query OK, 0 rows affected (0.046 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> CREATE UNIQUE INDEX idx_name
+    -> ON Student(Name);
+Query OK, 0 rows affected (0.031 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> DROP INDEX idx_email ON Student;
+Query OK, 0 rows affected (0.014 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> DROP INDEX idx_email ON Student;
+ERROR 1091 (42000): Can't DROP INDEX `idx_email`; check that it exists
+MariaDB [fullstack]> SELECT Email,
+    -> CONCAT(SUBSTRING_INDEX(Email,'@',1),'123') AS Default_Password
+    -> FROM Student;
++----------------+------------------+
+| Email          | Default_Password |
++----------------+------------------+
+| arjun@mail.com | arjun123         |
+| sneha@mail.com | sneha123         |
+| rahul@mail.com | rahul123         |
+| priya@mail.com | priya123         |
+| amit@mail.com  | amit123          |
+| kiran@mail.com | kiran123         |
++----------------+------------------+
+6 rows in set (0.001 sec)
+
+MariaDB [fullstack]> UPDATE Student
+    -> SET Phone = REGEXP_REPLACE(Phone,'[^0-9]','');
+Query OK, 2 rows affected (0.025 sec)
+Rows matched: 6  Changed: 2  Warnings: 0
+
+MariaDB [fullstack]> SELECT Name, Phone FROM Student;
++-------------+------------+
+| Name        | Phone      |
++-------------+------------+
+| Arjun Kumar | 919845011  |
+| Sneha Rao   | 9845022334 |
+| Rahul Nair  | 919845033  |
+| Priya Das   | 9845044556 |
+| Amit Singh  | 9845055667 |
+| Kiran Rao   | 9876543210 |
++-------------+------------+
+6 rows in set (0.001 sec)
+
+MariaDB [fullstack]> SELECT Name,
+    -> CONCAT(
+    -> UPPER(LEFT(Name,1)),
+    -> LOWER(SUBSTRING(Name,2))
+    -> ) AS Normalized_Name
+    -> FROM Student;
++-------------+-----------------+
+| Name        | Normalized_Name |
++-------------+-----------------+
+| Amit Singh  | Amit singh      |
+| Arjun Kumar | Arjun kumar     |
+| Kiran Rao   | Kiran rao       |
+| Priya Das   | Priya das       |
+| Rahul Nair  | Rahul nair      |
+| Sneha Rao   | Sneha rao       |
++-------------+-----------------+
+6 rows in set (0.019 sec)
+
+MariaDB [fullstack]> ALTER TABLE Employee
+    -> ADD COLUMN join_date DATE;
+Query OK, 0 rows affected (0.011 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> UPDATE Employee
+    -> SET join_date = '2021-06-10'
+    -> WHERE id = 1;
+Query OK, 1 row affected (0.018 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> UPDATE Employee
+    -> SET join_date = '2019-03-15'
+    -> WHERE id = 2;
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> UPDATE Employee
+    -> SET join_date = '2022-08-01'
+    -> WHERE id = 3;
+Query OK, 1 row affected (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [fullstack]> SELECT Department,
+    -> AVG(TIMESTAMPDIFF(YEAR, join_date, CURDATE())) AS Avg_Experience
+    -> FROM Employee
+    -> JOIN Student ON Employee.id = Student.VTU
+    -> GROUP BY Department;
++------------+----------------+
+| Department | Avg_Experience |
++------------+----------------+
+| CSE        |         4.0000 |
+| ECE        |         4.0000 |
+| IT         |         4.0000 |
++------------+----------------+
+3 rows in set, 24 warnings (0.022 sec)
+
+MariaDB [fullstack]> SET GLOBAL log_bin_trust_function_creators = 1;
+Query OK, 0 rows affected (0.019 sec)
+
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE FUNCTION NetSalary(sal DECIMAL(10,2))
+    -> RETURNS DECIMAL(10,2)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->    RETURN sal - (sal * 0.10);
+    -> END//
+Query OK, 0 rows affected (0.026 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> SELECT name, NetSalary(salary) AS Net_Salary
+    -> FROM Employee;
++--------+------------+
+| name   | Net_Salary |
++--------+------------+
+| Anil   |   45000.00 |
+| Sunita |   37800.00 |
+| Kiran  |   25200.00 |
+| Ravi   |   27000.00 |
++--------+------------+
+4 rows in set (0.021 sec)
+
+MariaDB [fullstack]> ALTER TABLE Employee
+    -> ADD COLUMN last_login DATE;
+Query OK, 0 rows affected (0.030 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [fullstack]> UPDATE Employee SET last_login = CURDATE() - 10 WHERE id = 1;
+Query OK, 1 row affected, 1 warning (0.022 sec)
+Rows matched: 1  Changed: 1  Warnings: 1
+
+MariaDB [fullstack]> UPDATE Employee SET last_login = CURDATE() - 40 WHERE id = 2;
+Query OK, 1 row affected, 1 warning (0.003 sec)
+Rows matched: 1  Changed: 1  Warnings: 1
+
+MariaDB [fullstack]> UPDATE Employee SET last_login = CURDATE() - 5 WHERE id = 3;
+Query OK, 1 row affected, 1 warning (0.004 sec)
+Rows matched: 1  Changed: 1  Warnings: 1
+
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE FUNCTION UserStatus(lastlogin DATE)
+    -> RETURNS VARCHAR(20)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->    IF DATEDIFF(CURDATE(), lastlogin) <= 30 THEN
+    ->       RETURN 'Active';
+    ->    ELSE
+    ->       RETURN 'Inactive';
+    ->    END IF;
+    -> END//
+Query OK, 0 rows affected (0.026 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> SELECT name, UserStatus(last_login) AS Status
+    -> FROM Employee;
++--------+----------+
+| name   | Status   |
++--------+----------+
+| Anil   | Inactive |
+| Sunita | Inactive |
+| Kiran  | Inactive |
+| Ravi   | Inactive |
++--------+----------+
+4 rows in set, 3 warnings (0.009 sec)
+
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE FUNCTION TaxCalc(sal INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->    IF sal <= 300000 THEN
+    ->       RETURN 0;
+    ->    ELSEIF sal <= 600000 THEN
+    ->       RETURN sal * 0.10;
+    ->    ELSEIF sal <= 1000000 THEN
+    ->       RETURN sal * 0.20;
+    ->    ELSE
+    ->       RETURN sal * 0.30;
+    ->    END IF;
+    -> END//
+Query OK, 0 rows affected (0.007 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> SELECT name, TaxCalc(salary*12) AS Yearly_Tax
+    -> FROM Employee;
++--------+------------+
+| name   | Yearly_Tax |
++--------+------------+
+| Anil   |      60000 |
+| Sunita |      50400 |
+| Kiran  |      33600 |
+| Ravi   |      36000 |
++--------+------------+
+4 rows in set (0.003 sec)
+
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE FUNCTION ExpCategory(yrs INT)
+    -> RETURNS VARCHAR(20)
+    -> DETERMINISTIC
+    -> BEGIN
+    ->    IF yrs < 2 THEN
+    ->       RETURN 'Fresher';
+    ->    ELSEIF yrs <= 5 THEN
+    ->       RETURN 'Junior';
+    ->    ELSEIF yrs <= 10 THEN
+    ->       RETURN 'Mid';
+    ->    ELSE
+    ->       RETURN 'Senior';
+    ->    END IF;
+    -> END//
+Query OK, 0 rows affected (0.025 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> SELECT name,
+    -> ExpCategory(TIMESTAMPDIFF(YEAR, join_date, CURDATE())) AS Category
+    -> FROM Employee;
++--------+----------+
+| name   | Category |
++--------+----------+
+| Anil   | Junior   |
+| Sunita | Mid      |
+| Kiran  | Junior   |
+| Ravi   | Senior   |
++--------+----------+
+4 rows in set (0.002 sec)
+
+MariaDB [fullstack]> DELIMITER //
+MariaDB [fullstack]>
+MariaDB [fullstack]> CREATE FUNCTION LateFee(days INT)
+    -> RETURNS INT
+    -> DETERMINISTIC
+    -> BEGIN
+    ->    DECLARE fee INT;
+    ->
+    ->    SET fee = days * 50;
+    ->
+    ->    IF fee > 1000 THEN
+    ->       SET fee = 1000;
+    ->    END IF;
+    ->
+    ->    RETURN fee;
+    -> END//
+Query OK, 0 rows affected (0.023 sec)
+
+MariaDB [fullstack]>
+MariaDB [fullstack]> DELIMITER ;
+MariaDB [fullstack]> SELECT LateFee(5) AS Fee_5_Days,
+    ->        LateFee(30) AS Fee_30_Days;
++------------+-------------+
+| Fee_5_Days | Fee_30_Days |
++------------+-------------+
+|        250 |        1000 |
++------------+-------------+
+1 row in set (0.001 sec)
+
