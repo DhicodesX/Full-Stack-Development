@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi Layout Web Interface</title>
+
+    <style>
+
+        /* ----------- Common Styles ----------- */
+
+        body {
+            margin : 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            background: #34495e;
+            padding: 10px;
+            color: white;
+        }
+
+        nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        section {
+            margin: 20px;
+        }
+
+        /* ----------- Grid Layout ----------- */
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .grid-card {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px gray;
+            text-align: center;
+        }
+
+        /* ----------- Fixed Sidebar Layout ----------- */
+
+        .sidebar-layout {
+            display: flex;
+            min-height: 400px;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: #1abc9c;
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 10px 0;
+        }
+
+        .content {
+            flex: 1;
+            background: white;
+            padding: 20px;
+        }
+
+        /* ----------- Responsive Design ----------- */
+
+        @media (max-width: 768px) {
+
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>My Web Interface</h1>
+        <p>Multiple Layout Designs using Semantic Tags</p>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Contact</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- Grid Layout Section -->
+        <section>
+
+            <h2>Grid-Based Layout</h2>
+
+            <div class="grid-layout">
+
+                <article class="grid-card">
+                    <h3>Card 1</h3>
+                    <p>Content for card one.</p>
+                </article>
+
+                <article class="grid-card">
+                    <h3>Card 2</h3>
+                    <p>Content for card two.</p>
+                </article>
+
+                <article class="grid-card">
+                    <h3>Card 3</h3>
+                    <p>Content for card three.</p>
+                </article>
+
+                <article class="grid-card">
+                    <h3>Card 4</h3>
+                    <p>Content for card four.</p>
+                </article>
+
+                <article class="grid-card">
+                    <h3>Card 5</h3>
+                    <p>Content for card five.</p>
+                </article>
+
+                <article class="grid-card">
+                    <h3>Card 6</h3>
+                    <p>Content for card six.</p>
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- Fixed Sidebar Section -->
+        <section>
+
+            <h2>Fixed Sidebar Layout</h2>
+
+            <div class="sidebar-layout">
+
+                <!-- Sidebar -->
+                <aside class="sidebar">
+
+                    <h3>Menu</h3>
+
+                    <a href="#">Dashboard</a>
+                    <a href="#">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Logout</a>
+
+                </aside>
+
+
+                <!-- Main Content -->
+                <article class="content">
+
+                    <h3>Main Content Area</h3>
+
+                    <p>
+                        This area contains the main content.
+                        The sidebar stays fixed while scrolling.
+                    </p>
+
+                    <p>
+                        You can use this layout for dashboards,
+                        admin panels, and portals.
+                    </p>
+
+                    <p>
+                        Semantic tags improve SEO and accessibility.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 | Designed by Dhivya</p>
+    </footer>
+
+</body>
+</html>
