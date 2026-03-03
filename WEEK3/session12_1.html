@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auth Forms</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .container {
+        width: 400px;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    input {
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #0056b3;
+    }
+
+    .switch {
+        text-align: center;
+        margin-top: 10px;
+        cursor: pointer;
+        color: blue;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- SIGN IN FORM -->
+    <div id="signin">
+        <h2>Sign In</h2>
+        <form aria-labelledby="signinHeading">
+            
+            <label for="signinEmail">Email</label>
+            <input type="email" id="signinEmail" name="email"
+                   required
+                   aria-required="true"
+                   aria-label="Enter your email address">
+
+            <label for="signinPassword">Password</label>
+            <input type="password" id="signinPassword" name="password"
+                   required
+                   aria-required="true"
+                   aria-label="Enter your password">
+
+            <button type="submit">Login</button>
+        </form>
+
+        <div class="switch" onclick="toggleForm()">
+            Don't have an account? Sign Up
+        </div>
+    </div>
+
+    <!-- SIGN UP FORM -->
+    <div id="signup" class="hidden">
+        <h2>Sign Up</h2>
+        <form aria-labelledby="signupHeading">
+            
+            <label for="fullName">Full Name</label>
+            <input type="text" id="fullName" name="fullname"
+                   required
+                   aria-required="true"
+                   aria-label="Enter your full name">
+
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" name="email"
+                   required
+                   aria-required="true"
+                   aria-label="Enter your email address">
+
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" name="password"
+                   required
+                   minlength="6"
+                   aria-required="true"
+                   aria-label="Create a password">
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword"
+                   required
+                   aria-required="true"
+                   aria-label="Confirm your password">
+
+            <button type="submit">Register</button>
+        </form>
+
+        <div class="switch" onclick="toggleForm()">
+            Already have an account? Sign In
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function toggleForm() {
+        document.getElementById("signin").classList.toggle("hidden");
+        document.getElementById("signup").classList.toggle("hidden");
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mouse Quadrant Detector</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            transition: background-color 0.2s ease;
+        }
+
+        #info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            font-family: Arial;
+        }
+    </style>
+</head>
+<body>
+
+<div id="info">Move your mouse...</div>
+
+<script>
+    const info = document.getElementById("info");
+
+    document.addEventListener("mousemove", (event) => {
+        const x = event.clientX;
+        const y = event.clientY;
+
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        if (x < width / 2 && y < height / 2) {
+            document.body.style.backgroundColor = "lightcoral";
+            info.textContent = "Top Left Quadrant";
+        }
+        else if (x >= width / 2 && y < height / 2) {
+            document.body.style.backgroundColor = "lightblue";
+            info.textContent = "Top Right Quadrant";
+        }
+        else if (x < width / 2 && y >= height / 2) {
+            document.body.style.backgroundColor = "lightgreen";
+            info.textContent = "Bottom Left Quadrant";
+        }
+        else {
+            document.body.style.backgroundColor = "plum";
+            info.textContent = "Bottom Right Quadrant";
+        }
+    });
+</script>
+
+</body>
+</html>
